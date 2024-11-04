@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,34 +33,56 @@ public class ApiResponse<T> {
         }
 
         public static <T> ResponseEntity<ApiResponse<T>> success(
-                        String path,
+                        Integer statusCode,
+                        T data) {
+                return ResponseEntity.status(statusCode)
+                                .body(new ApiResponse<>(getCurrentPath(), getCurrentTime(), true,
+                                                statusCode, "No message sent.", data, null));
+
+        }
+
+        public static <T> ResponseEntity<ApiResponse<T>> success(
                         String message,
                         Integer statusCode,
                         T data) {
-
                 return ResponseEntity.status(statusCode)
-                                .body(new ApiResponse<>(path, getCurrentTime(), true, statusCode, message, data, null));
+                                .body(new ApiResponse<>(getCurrentPath(), getCurrentTime(), true,
+                                                statusCode, message, data, null));
+
         }
 
         public static <T> ResponseEntity<ApiResponse<T>> successWithHeaders(
-                        String path,
                         String message,
                         Integer statusCode,
                         T data,
                         HttpHeaders headers) {
 
                 return ResponseEntity.status(statusCode).headers(headers)
-                                .body(new ApiResponse<>(path, getCurrentTime(), true, statusCode, message, data, null));
+                                .body(new ApiResponse<>(getCurrentPath(), getCurrentTime(), true, statusCode, message,
+                                                data, null));
         }
 
         public static <T> ResponseEntity<ApiResponse<T>> failure(
-                        String path,
                         String message,
                         Integer statusCode,
                         Map<String, String> errors) {
 
                 return ResponseEntity.status(statusCode)
-                                .body(new ApiResponse<>(path, getCurrentTime(), false, statusCode, message, null,
+                                .body(new ApiResponse<>(getCurrentPath(), getCurrentTime(), false, statusCode, message,
+                                                null,
                                                 errors));
+        }
+
+        private static String getCurrentPath() {
+                try {
+                        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder
+                                        .getRequestAttributes();
+                        if (attrs != null) {
+                                return attrs.getRequest().getRequestURI();
+                        }
+                } catch (Exception ex) {
+                        return "Could not get the request path.";
+                }
+                return "N/A";
         }
 }

@@ -18,7 +18,6 @@ import com.security.backend.dtos.Request.LoginRequest;
 import com.security.backend.dtos.Response.ApiResponse;
 import com.security.backend.services.AuthService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,44 +30,41 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserDto>> registerUser(@RequestBody @Valid UserDto user,
-            HttpServletRequest request) throws Exception {
+    public ResponseEntity<ApiResponse<UserDto>> registerUser(@RequestBody @Valid UserDto user) throws Exception {
+
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user = authService.handleRegister(user);
         } catch (DataIntegrityViolationException ex) {
             return ApiResponse.failure(
-                    request.getRequestURI(),
-                    "Email already registerd or something wrong with the data while saving in database.", 409, null);
+                    "Email already registerd or something wrong with the data.", 409, null);
         } catch (Exception ex) {
-            return ApiResponse.failure(request.getRequestURI(),
+            return ApiResponse.failure(
                     ex.getMessage() == null ? "Something went wrong." : ex.getMessage(), 500, null);
         }
 
         HttpHeaders header = new HttpHeaders();
         header.add("Authorization", "Bearer " + jwtService.generateToken(user));
 
-        return ApiResponse.successWithHeaders(request.getRequestURI(), "User Registration successful.", 201,
+        return ApiResponse.successWithHeaders("User Registration successful.", 201,
                 user, header);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<Object>> handleLogin(@RequestBody LoginRequest loginReq,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Object>> handleLogin(@RequestBody LoginRequest loginReq) {
         UserDto user;
         try {
             user = authService.handleLogin(loginReq);
         } catch (BadCredentialsException ex) {
             return ApiResponse.failure(
-                    request.getRequestURI(),
                     ex.getMessage(), 401, null);
         } catch (Exception ex) {
-            return ApiResponse.failure(request.getRequestURI(),
+            return ApiResponse.failure(
                     ex.getMessage() == null ? "Something went wrong." : ex.getMessage(), 500, null);
         }
         HashMap<String, String> token = new HashMap<>();
         token.put("jwtToken", "Bearer " + jwtService.generateToken(user));
-        return ApiResponse.success(request.getRequestURI(), "User Login successful.", HttpStatus.OK.value(),
+        return ApiResponse.success("User Login successful.", HttpStatus.OK.value(),
                 token);
     }
 
