@@ -9,6 +9,9 @@ import com.security.backend.models.UserModel;
 public interface UserRepository extends JpaRepository<UserModel, Long> {
 
     UserModel findByEmail(String email);
+
     boolean existsByEmail(String email);
+
+    void deleteByEmail(String email);
 
 }

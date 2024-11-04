@@ -2,9 +2,10 @@ package com.security.backend.services;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Set;
 
 import com.security.backend.dtos.UserDto;
-import com.security.backend.models.UserModel;
+import com.security.backend.models.Role;
 
 public interface UserService {
 
@@ -12,6 +13,10 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
 
-    UserModel getUserByEmail(String email);
+    UserDto getUserByEmail(String email);
+
+    boolean deleteUserByEmail(String email);
+
+    UserDto updateUserRoles(String email, Set<Role> roles) throws ParseException;
 
 }

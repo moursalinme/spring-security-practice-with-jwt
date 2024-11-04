@@ -39,16 +39,8 @@ public class UserDto {
     @Size(min = 6, message = "Password must be at least 6 characters long.")
     private String password;
 
-    // @Past(message = "Date of birth must be in the past.")
-    // @NotNull(message = "Date of birth is required.")
-    // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone
-    // = "UTC")
-    // private Date dob;
-
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Date must be in the format yyyy-MM-dd")
     private String dob;
 
-    // private String roles;
     Set<Role> roles;
-
 }
