@@ -1,0 +1,23 @@
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/security_test2
+        username: root
+        password: 123456
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+
+    security:
+        user:
+            name: admin
+            password: $2a$10$D99PE8JEzdhbvKeygWekVeyDzen0Qc5zVrLjXRYe4vvafT67597UW
+            roles: ADMIN
+
+logging:
+    level:
+        org.springframework.security: DEBUG
